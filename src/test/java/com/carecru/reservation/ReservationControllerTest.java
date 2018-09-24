@@ -15,10 +15,11 @@ import static io.restassured.RestAssured.given;
 @SpringBootTest(classes = RezzyRauntApplication.class,
 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReservationControllerTest {
+
     private final Long restaurantId = 1L;
 
     @LocalServerPort
-    private int port;
+    private int port= 5000;
 
     @Before
     public void setUp() throws Exception{
