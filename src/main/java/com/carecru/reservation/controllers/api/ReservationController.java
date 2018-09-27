@@ -7,6 +7,7 @@ import com.carecru.reservation.services.ReservationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,7 @@ import org.springframework.web.util.UriTemplate;
 
 import javax.ws.rs.Consumes;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +52,9 @@ public class ReservationController {
         if (!reservationService.isDepositPaymentOK(reservation))
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Invalid value. Do you need to pay $10 per each customer.");
 
+        if (isAValidDate(reservation.getReservedDate()))
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Unfortunately, we couldn't book your scheduled because your date is not valid!");
+
         Reservation reservationDB = reservationService.createReservation(id, reservation);
         if (reservationDB == null){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("This schedule is already reserved!");
@@ -71,6 +76,8 @@ public class ReservationController {
                                                       @RequestParam(value="reservationId") Long reservationId) {
 
         Reservation reservation = reservationService.findByRestaurantId(reservationId, id);
+        if (reservation == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Please check your reservation ID!");
         return ResponseEntity.status(HttpStatus.OK).body(reservation);
     }
 
@@ -121,6 +128,11 @@ public class ReservationController {
         }
         return new ObjectMapper().writeValueAsString(returnMsg);
 
+    }
+
+    private boolean isAValidDate(LocalDate desired){
+        LocalDate now = LocalDate.now();
+        return desired.isBefore(now);
     }
 
 }

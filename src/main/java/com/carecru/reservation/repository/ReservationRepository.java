@@ -22,7 +22,7 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
 
     Reservation findByReservedDate(LocalDate reservedDate);
 
-    Reservation findReservationsByReservationIdAndRestaurantId(Long reservationId, Long restaurantId);
+    Reservation findReservationsByReservationIdAndRestaurantIdAndStatus(Long reservationId, Long restaurantId, ReservationStatus status);
 
     List<Reservation> findAllByRestaurantAndStatus(Restaurant restaurant, ReservationStatus free);
 

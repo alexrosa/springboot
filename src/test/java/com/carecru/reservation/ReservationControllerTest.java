@@ -3,12 +3,14 @@ package com.carecru.reservation;
 import com.carecru.reservation.controllers.api.ApiResource;
 import com.carecru.reservation.domain.Reservation;
 import com.carecru.reservation.domain.Restaurant;
+import com.carecru.reservation.services.ReservationService;
 import com.carecru.reservation.services.RestaurantService;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,8 @@ public class ReservationControllerTest {
     private Reservation reservationTest;
     @Autowired
     RestaurantService restaurantService;
+    @Autowired
+    ReservationService reservationService;
     @LocalServerPort
     private int port;
 
@@ -44,7 +48,7 @@ public class ReservationControllerTest {
         RestAssured.basePath = ApiResource.API_VERSION;
         RestAssured.baseURI = "http://localhost/rezzyraunt/";
 
-        Restaurant rest= restaurantService.findById(RESTAURANT_ID);
+        Restaurant rest = restaurantService.findById(RESTAURANT_ID);
         reservationTest = new Reservation();
         reservationTest.setReservedDate(LocalDate.now());
         reservationTest.setDeposit(BigDecimal.valueOf(10));
@@ -52,6 +56,7 @@ public class ReservationControllerTest {
         reservationTest.setRestaurant(rest);
         reservationTest.setStartTime(LocalTime.now());
         reservationTest.setEndTime(LocalTime.now().plusHours(1));
+
     }
 
     @Test
@@ -76,14 +81,14 @@ public class ReservationControllerTest {
                 .all();
     }
 
-    @Test
+
+    @After
     public void reservationCheck() throws Exception{
-        given().queryParam("reservationId", RESREVATION_ID)
-                .when()
-                .put("restaurants/"+RESTAURANT_ID+"/reservation-check")
+        given().when()
+                .put("restaurants/"+RESTAURANT_ID+"/reservation-check/92")
                 .then()
                 .assertThat().contentType(ContentType.JSON)
-                .assertThat().statusCode(200)
+                .assertThat().statusCode(404)
                 .log()
                 .all();
     }
@@ -95,7 +100,7 @@ public class ReservationControllerTest {
                 .put("restaurants/"+RESTAURANT_ID+"/cancel")
                 .then()
                 .assertThat().contentType(ContentType.TEXT)
-                .assertThat().statusCode(200)
+                .assertThat().statusCode(204)
                 .log()
                 .all();
 

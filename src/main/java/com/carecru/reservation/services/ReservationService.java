@@ -50,7 +50,7 @@ public class ReservationService implements IBaseService<Reservation>{
     }
 
     public Reservation findByRestaurantId(Long reservationId, Long restaurantId){
-        return reservationRepository.findReservationsByReservationIdAndRestaurantId(reservationId, restaurantId);
+        return reservationRepository.findReservationsByReservationIdAndRestaurantIdAndStatus(reservationId, restaurantId, ReservationStatus.BUSY);
     }
 
     public Reservation createReservation(Long id, Reservation reservation) {
@@ -96,7 +96,7 @@ public class ReservationService implements IBaseService<Reservation>{
 
     public boolean isDepositPaymentOK(Reservation reservation){
         BigDecimal deposit_amount = BigDecimal.valueOf(reservation.getNumberOfCustomers() * COST_DEPOSIT_ONE_PERSON);
-        return (deposit_amount == reservation.getDeposit());
+        return (deposit_amount.doubleValue() == reservation.getDeposit().doubleValue());
 
     }
 
@@ -124,7 +124,7 @@ public class ReservationService implements IBaseService<Reservation>{
         Duration duration = Duration.between(LocalDateTime.now(), reservedTime);
 
         long difference = Math.abs(duration.toHours());
-        double refundValue = reservation.getDeposit().doubleValue();
+        double refundValue = 0;
 
         if (difference < 24){
             LocalTime currentTime = LocalTime.now();
@@ -138,6 +138,7 @@ public class ReservationService implements IBaseService<Reservation>{
                 refundValue -= 0.75;
             }
         }
+        reservation.setFee(new BigDecimal(reservation.getDeposit().doubleValue()-refundValue));
         return new BigDecimal(refundValue).setScale(2, BigDecimal.ROUND_CEILING);
     }
 }

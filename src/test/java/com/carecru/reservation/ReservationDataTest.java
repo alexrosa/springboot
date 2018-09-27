@@ -15,12 +15,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -73,7 +71,7 @@ public class ReservationDataTest {
     @Test
     public void findReservationsByReservationIdAndRestaurantId(){
         this.entityManager.persist(currentReservation);
-        Reservation reservationDB = reservationRepository.findReservationsByReservationIdAndRestaurantId(currentReservation.getReservationId(), currentReservation.getRestaurant().getId());
+        Reservation reservationDB = reservationRepository.findReservationsByReservationIdAndRestaurantIdAndStatus(currentReservation.getReservationId(), currentReservation.getRestaurant().getId(), ReservationStatus.BUSY);
         assertNotNull(reservationDB);
     }
 
