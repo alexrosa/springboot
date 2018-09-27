@@ -14,6 +14,11 @@ Also you can use the Spring Boot Maven plugin like so:
 ```
 mvn spring-boot:run
 ```
+## Access the API Documentation
+```
+http://localhost:8080/ or http://localhost:8080/rezzyraunt
+```
+
 ## Project Improvements:
 * Refactoring the REST API improving the return messages.
 * Refactoring the entire project. I know that I can build a better code;
