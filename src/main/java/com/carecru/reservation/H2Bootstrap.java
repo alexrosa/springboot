@@ -2,7 +2,6 @@ package com.carecru.reservation;
 
 import com.carecru.reservation.domain.Reservation;
 import com.carecru.reservation.domain.Restaurant;
-import com.carecru.reservation.repository.ReservationRepository;
 import com.carecru.reservation.services.ReservationService;
 import com.carecru.reservation.services.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;

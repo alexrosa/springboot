@@ -8,23 +8,33 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+
+import java.text.SimpleDateFormat;
 
 @Configuration
 public class ApiConfiguration {
 
+    @Bean
     @Primary
-    public ObjectMapper objectMapperBuilder(Jackson2ObjectMapperBuilder builder) {
-        ObjectMapper mapper = builder.createXmlMapper(false).build();
-        builder.modulesToInstall(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
-        return mapper;
+    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+        ObjectMapper objectMapper = builder.createXmlMapper(false).build();
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
     }
 
     @Bean
-    public ObjectWriter objectWriter(ObjectMapper objectMapper){
-        return objectMapper.writerWithDefaultPrettyPrinter();
+    public Jackson2ObjectMapperBuilder jacksonBuilder() {
+        Jackson2ObjectMapperBuilder b = new Jackson2ObjectMapperBuilder();
+        b.indentOutput(true).dateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        return b;
     }
 
+    @Bean
+    public TaskScheduler taskScheduler(){
+        return new ConcurrentTaskScheduler();
+    }
 
 }

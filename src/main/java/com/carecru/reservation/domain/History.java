@@ -41,4 +41,6 @@ public class History implements Serializable{
     private Restaurant restaurant;
 
     private ReservationStatus status;
+
+    private float fee;
 }

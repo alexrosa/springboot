@@ -1,7 +1,6 @@
 package com.carecru.reservation.services;
 
 import com.carecru.reservation.domain.Restaurant;
-import com.carecru.reservation.repository.ReservationRepository;
 import com.carecru.reservation.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,7 @@ public class RestaurantService implements IBaseService<Restaurant> {
 
     @Override
     public Restaurant save(Restaurant obj) {
+
         return repository.save(obj);
     }
 

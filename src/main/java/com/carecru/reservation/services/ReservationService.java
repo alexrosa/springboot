@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import javax.persistence.EntityManager;
-import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.time.*;
 import java.util.List;
-import java.time.LocalTime;
 
 @Service
 public class ReservationService implements IBaseService<Reservation>{
 
-    public static final int TOTAL_DAYS = 90;
+    private static final int TOTAL_DAYS = 90;
+    private static final float COST_DEPOSIT_ONE_PERSON = 10;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -49,18 +50,16 @@ public class ReservationService implements IBaseService<Reservation>{
     }
 
     public Reservation findByRestaurantId(Long reservationId, Long restaurantId){
-        return reservationRepository.findReservationByReservationIdAndReservationId(reservationId, restaurantId);
+        return reservationRepository.findReservationsByReservationIdAndRestaurantId(reservationId, restaurantId);
     }
 
     public Reservation createReservation(Long id, Reservation reservation) {
         Reservation reservationDB = reservationRepository.findByReservedDate(reservation.getReservedDate());
 
-        if (reservationDB == null) return null;
-
-        if (reservationDB.getStatus() == ReservationStatus.BUSY) return null;
+        if ((reservationDB != null) && (reservationDB.getStatus() == ReservationStatus.BUSY)) return null;
 
         Restaurant restaurant = restaurantService.findById(id);
-        reservationDB.setStatus(ReservationStatus.BUSY);
+        reservation.setStatus(ReservationStatus.BUSY);
         reservation.setRestaurant(restaurant);
         return reservationRepository.save(reservation);
     }
@@ -85,7 +84,7 @@ public class ReservationService implements IBaseService<Reservation>{
             reservation.setStartTime(startTime);
             reservation.setEndTime(startTime.plusHours(12).minusMinutes(1));
             reservation.setStatus(ReservationStatus.FREE);
-            reservation.setDeposit(10);
+            reservation.setDeposit(BigDecimal.valueOf(10));
             reservationRepository.save(reservation);
             reservedDate = reservedDate.plusDays(1);
         }
@@ -95,4 +94,50 @@ public class ReservationService implements IBaseService<Reservation>{
         return reservationRepository.findReservationsByHistory(dateToFind);
     }
 
+    public boolean isDepositPaymentOK(Reservation reservation){
+        BigDecimal deposit_amount = BigDecimal.valueOf(reservation.getNumberOfCustomers() * COST_DEPOSIT_ONE_PERSON);
+        return (deposit_amount == reservation.getDeposit());
+
+    }
+
+    public BigDecimal rescheduleReservation(Reservation reservation){
+        BigDecimal refundValue = applyingRefundPolicy(reservation);
+        reservation.setStatus(ReservationStatus.BUSY);
+        reservation.setFee(refundValue);
+        reservationRepository.save(reservation);
+        return refundValue;
+    }
+
+    private boolean isBetween(LocalTime candidate, LocalTime start, LocalTime end) {
+        return !candidate.isBefore(start) && !candidate.isAfter(end);
+    }
+    public BigDecimal cancelReservation(Reservation reservation){
+        BigDecimal refundValue = applyingRefundPolicy(reservation);
+        reservation.setStatus(ReservationStatus.CANCELED);
+        reservation.setFee(refundValue);
+        reservationRepository.save(reservation);
+        return refundValue;
+    }
+
+    private BigDecimal applyingRefundPolicy(Reservation reservation){
+        LocalDateTime reservedTime = LocalDateTime.of(reservation.getReservedDate(), reservation.getStartTime());
+        Duration duration = Duration.between(LocalDateTime.now(), reservedTime);
+
+        long difference = Math.abs(duration.toHours());
+        double refundValue = reservation.getDeposit().doubleValue();
+
+        if (difference < 24){
+            LocalTime currentTime = LocalTime.now();
+
+            if (isBetween(currentTime, LocalTime.of(12,00), LocalTime.of(23,59))){
+                refundValue -= 0.25;
+            }else if (isBetween(currentTime, LocalTime.of(2,00), LocalTime.of(11,59))) {
+                refundValue -= 0.50;
+
+            }else{
+                refundValue -= 0.75;
+            }
+        }
+        return new BigDecimal(refundValue).setScale(2, BigDecimal.ROUND_CEILING);
+    }
 }

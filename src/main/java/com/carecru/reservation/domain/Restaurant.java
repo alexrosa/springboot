@@ -1,16 +1,11 @@
 package com.carecru.reservation.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,8 +16,5 @@ public class Restaurant implements Serializable {
     private Long id;
 
     private String name;
-
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<Reservation> reservationList;
 
 }

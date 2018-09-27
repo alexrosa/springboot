@@ -1,13 +1,13 @@
 package com.carecru.reservation.scheduler;
 
-import com.carecru.reservation.domain.History;
-import com.carecru.reservation.domain.Reservation;
 import com.carecru.reservation.services.HistoryService;
 import com.carecru.reservation.services.ReservationService;
+import com.carecru.reservation.domain.Reservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.AbstractAuditable_;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
