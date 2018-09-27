@@ -14,3 +14,10 @@ Also you can use the Spring Boot Maven plugin like so:
 ```
 mvn spring-boot:run
 ```
+## Project Improvements:
+* Refactoring the REST API improving the return messages.
+* Refactoring the entire project. I know that I can build a better code;
+* Include a cache system (Redis);
+* Include a database(Elasticsearch, MongoDB or Cassandra)
+* Include more tests to guarantee the business rules of the project.
+
