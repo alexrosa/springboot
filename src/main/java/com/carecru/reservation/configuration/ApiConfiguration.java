@@ -17,15 +17,6 @@ import java.text.SimpleDateFormat;
 public class ApiConfiguration {
 
     @Bean
-    @Primary
-    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-        ObjectMapper objectMapper = builder.createXmlMapper(false).build();
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper;
-    }
-
-    @Bean
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
         Jackson2ObjectMapperBuilder b = new Jackson2ObjectMapperBuilder();
         b.indentOutput(true).dateFormat(new SimpleDateFormat("yyyy-MM-dd"));
