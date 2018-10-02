@@ -37,14 +37,7 @@ public class HistoryService implements IBaseService<History> {
 
     public void copyReservation(Reservation reservation){
         History history = new History();
-        /*
-        history.setDeposit(reservation.getDeposit());
-        history.setNumberOfCustomers(reservation.getNumberOfCustomers());
-        history.setReservedDate(reservation.getReservedDate());
-        history.setStatus(reservation.getStatus());
-        history.setStartTime(reservation.getStartTime());
-        history.setEndTime(reservation.getEndTime());*/
-        BeanUtils.copyProperties(reservation, history);
+        BeanUtils.copyProperties(history, reservation);
         historyRepository.save(history);
     }
 

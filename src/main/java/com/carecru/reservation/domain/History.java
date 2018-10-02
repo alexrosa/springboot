@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -33,7 +34,7 @@ public class History implements Serializable{
     private LocalTime endTime;
 
     @NotNull
-    private float deposit;
+    private BigDecimal deposit;
 
     @ManyToOne
     @JsonManagedReference
